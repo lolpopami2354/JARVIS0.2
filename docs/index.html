@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MARK L — AI Assistant</title>
+    <style>
+        :root { --cyan: #00d4ff; --bg: #00060a; --panel: #010d14; }
+        * { margin: 0; box-sizing: border-box; }
+        body {
+            background: var(--bg); color: #8ffcff; font-family: 'Courier New', monospace;
+            display: flex; flex-direction: column; align-items: center;
+            min-height: 100vh; padding: 60px 20px;
+        }
+        .reactor {
+            width: 120px; height: 120px; border-radius: 50%;
+            border: 2px solid var(--cyan); box-shadow: 0 0 40px rgba(0,212,255,0.3);
+            display: grid; place-items: center; margin-bottom: 30px;
+            animation: pulse 3s ease-in-out infinite;
+        }
+        @keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.05)} }
+        h1 { font-size: 2.5rem; color: var(--cyan); letter-spacing: 4px; margin-bottom: 10px; }
+        .tagline { color: #3a8a9a; margin-bottom: 40px; font-size: 0.95rem; }
+        .download-card {
+            background: var(--panel); border: 1px solid #0d3347;
+            border-radius: 8px; padding: 30px 40px; text-align: center;
+            max-width: 480px; width: 100%;
+        }
+        .detected { color: #00ff88; font-size: 0.85rem; margin-bottom: 16px; min-height: 20px; }
+        .btn {
+            display: block; width: 100%; padding: 14px; margin: 8px 0;
+            background: transparent; color: var(--cyan); border: 1px solid var(--cyan);
+            border-radius: 4px; font-family: inherit; font-size: 0.9rem;
+            cursor: pointer; text-decoration: none; transition: all 0.2s;
+        }
+        .btn:hover { background: rgba(0,212,255,0.1); }
+        .btn.primary { background: rgba(0,212,255,0.08); font-weight: bold; }
+        .meta { margin-top: 20px; font-size: 0.75rem; color: #1a5c7a; }
+        .links { margin-top: 30px; display: flex; gap: 20px; }
+        .links a { color: #5ab8cc; font-size: 0.8rem; }
+    </style>
+</head>
+<body>
+    <div class="reactor">
+        <svg width="60" height="60" viewBox="0 0 60 60">
+            <circle cx="30" cy="30" r="28" stroke="#00d4ff" stroke-width="1" fill="none"/>
+            <circle cx="30" cy="30" r="8" fill="#00d4ff"/>
+            <path d="M30 2 L30 12 M30 48 L30 58 M2 30 L12 30 M48 30 L58 30" stroke="#00d4ff" stroke-width="1"/>
+        </svg>
+    </div>
+    <h1>MARK L</h1>
+    <p class="tagline">Real-time voice AI. System control. Persistent memory.</p>
+    
+    <div class="download-card">
+        <div class="detected" id="detected">Detecting your OS...</div>
+        <a id="primary-btn" class="btn primary" href="https://github.com/YOUR_USERNAME/Mark-L/releases" target="_blank">
+            Download for <span id="os-name">your OS</span>
+        </a>
+        <a class="btn" href="https://github.com/YOUR_USERNAME/Mark-L/releases" target="_blank">View All Releases</a>
+        <div class="meta">Requires Python 3.11+ • Free Gemini API key</div>
+    </div>
+    
+    <div class="links">
+        <a href="https://github.com/YOUR_USERNAME/Mark-L">GitHub</a>
+        <a href="https://youtube.com/@FatihMakes">YouTube</a>
+        <a href="https://instagram.com/fatihmakes">Instagram</a>
+    </div>
+
+    <script>
+        const osMap = {
+            'Win': {name: 'Windows', file: 'MARK-L-Windows.zip'},
+            'Mac': {name: 'macOS', file: 'MARK-L-macOS.zip'},
+            'Linux': {name: 'Linux', file: 'MARK-L-Linux.tar.gz'}
+        };
+        const ua = navigator.userAgent;
+        let os = osMap.Linux;
+        if (ua.includes('Win')) os = osMap.Win;
+        else if (ua.includes('Mac')) os = osMap.Mac;
+        
+        document.getElementById('detected').textContent = `Detected: ${os.name}`;
+        document.getElementById('os-name').textContent = os.name;
+        
+        // Link directly to latest release asset
+        const repo = 'YOUR_USERNAME/Mark-L'; // <-- CHANGE THIS
+        document.getElementById('primary-btn').href = 
+            `https://github.com/${repo}/releases/latest/download/${os.file}`;
+    </script>
+</body>
+</html>
