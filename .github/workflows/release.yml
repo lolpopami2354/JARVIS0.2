@@ -1,0 +1,76 @@
+name: Build & Release
+
+on:
+  push:
+    tags: [ 'v*' ]
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            target: windows
+            ext: .exe
+          - os: macos-latest
+            target: macos
+            ext: ""
+          - os: ubuntu-latest
+            target: linux
+            ext: ""
+
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies (Ubuntu)
+        if: matrix.target == 'linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y portaudio19-dev python3-dev libportaudio2
+
+      - name: Install Python deps
+        run: |
+          python -m pip install --upgrade pip
+          pip install pyinstaller
+          pip install -r requirements.txt
+          python -m playwright install chromium
+
+      - name: Build binary
+        run: pyinstaller MarkL.spec --clean --noconfirm
+
+      - name: Package (Windows)
+        if: matrix.target == 'windows'
+        run: |
+          cd dist
+          7z a MARK-L-Windows.zip MARK-L.exe
+          echo "ASSET=dist/MARK-L-Windows.zip" >> $env:GITHUB_ENV
+
+      - name: Package (macOS)
+        if: matrix.target == 'macos'
+        run: |
+          cd dist
+          zip -r MARK-L-macOS.zip MARK-L.app
+          echo "ASSET=dist/MARK-L-macOS.zip" >> $GITHUB_ENV
+
+      - name: Package (Linux)
+        if: matrix.target == 'linux'
+        run: |
+          cd dist
+          tar -czvf MARK-L-Linux.tar.gz MARK-L
+          echo "ASSET=dist/MARK-L-Linux.tar.gz" >> $GITHUB_ENV
+
+      - name: Upload Release Asset
+        uses: softprops/action-gh-release@v1
+        with:
+          files: ${{ env.ASSET }}
+          generate_release_notes: true
